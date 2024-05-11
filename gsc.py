@@ -1,4 +1,5 @@
 import sys
+import re
 
 coords = [
     "q", "w", "e", "r", "t", "y", "u", 
@@ -66,14 +67,17 @@ def read_score(fp):
     with open(fp) as f:
         content = f.readlines()
     min_interval, score_code = eval(content[0]), content[1:]
-    notes = "".join(score_code).replace("\n", "").split("/")
+    notes = re.sub(r"/\*.*?\*/", "", "".join(score_code).replace("\n", "")).split("/")
     
     output_string = ahk_ys_init
     for note in notes:
-        if "0" not in note:
+        if note == "":
+            output_string += f"Sleep {min_interval}\n"
+        elif "0" not in note:
             i = note.strip().split(" ")
             for j in i:
-                output_string += f"Send {keys[j]}\n" + f"Sleep {min_interval}\n"
+                output_string += f"Send {keys[j]}\n"
+            output_string += f"Sleep {min_interval}\n"
         else:
             output_string += f"Sleep {min_interval*note.count('0')}\n"
     
