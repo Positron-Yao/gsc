@@ -1,58 +1,31 @@
 import sys
 import re
 
-coords = [
-    "q", "w", "e", "r", "t", "y", "u", 
-    "a", "s", "d", "f", "g", "h", "j", 
-    "z", "x", "c", "v", "b", "n", "m"
-]
-
 keys = {
-    "c5": coords[0],
-    "d5": coords[1],
-    "e5": coords[2],
-    "f5": coords[3],
-    "g5": coords[4],
-    "a5": coords[5],
-    "b5": coords[6],
-    "c4": coords[7],
-    "d4": coords[8],
-    "e4": coords[9],
-    "f4": coords[10],
-    "g4": coords[11],
-    "a4": coords[12],
-    "b4": coords[13],
-    "c3": coords[14],
-    "d3": coords[15],
-    "e3": coords[16],
-    "f3": coords[17],
-    "g3": coords[18],
-    "a3": coords[19],
-    "b3": coords[20]
+    "c5": "q",
+    "d5": "w",
+    "e5": "e",
+    "f5": "r",
+    "g5": "t",
+    "a5": "y",
+    "b5": "u",
+    "c4": "a",
+    "d4": "s",
+    "e4": "d",
+    "f4": "f",
+    "g4": "g",
+    "a4": "h",
+    "b4": "j",
+    "c3": "z",
+    "d3": "x",
+    "e3": "c",
+    "f3": "v",
+    "g3": "b",
+    "a3": "n",
+    "b3": "m"
 }
 
-ahk_ys_init = '''full_command_line := DllCall("GetCommandLine", "str")
-if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
-{
-    try ; leads to having the script re-launching itself as administrator
-    {
-        if A_IsCompiled
-            Run *RunAs "%A_ScriptFullPath%" /restart
-        else
-            Run *RunAs "%A_AhkPath%" /restart "%A_ScriptFullPath%"
-    }
-    ExitApp
-}
-I_Icon = Neuvillette.ico
-IfExist, %I_Icon%
-Menu, Tray, Icon, %I_Icon%
-
-#IfWinActive ahk_exe Yuanshen.exe
-
-#NoEnv
-#Warn
-SendMode Input
-SetWorkingDir %A_ScriptDir%
+ahk_ys_init = '''#IfWinActive ahk_exe Yuanshen.exe
 
 ; Main
 Capslock::
@@ -99,7 +72,6 @@ def read_score(fp):
             count = 0
             output = ahk_ys_init
             def __init__(self, name, starttime, duration):
-                # content = (name, duration)
                 self.name = name
                 self.starttime = starttime
                 self.duration = duration
@@ -165,7 +137,19 @@ def read_score(fp):
         
 
 def main():
-    read_score(sys.argv[1])
+    if len(sys.argv) > 1:
+        read_score(sys.argv[1])
+    else:
+        choice = input("Genshin Score Compiler\n [1] 输入曲谱文件\n [q] 退出\n>> ")
+        if choice == "1" or choice == "":
+            fp = input("文件位置: \n>> ")
+            read_score(fp)
+        else:
+            return
+
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BaseException:
+        print("爆了，你看你小宝贝的输入的什么可爱东西，重开吧()")
